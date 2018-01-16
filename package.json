@@ -1,0 +1,71 @@
+{
+  "name": "commons-base",
+  "version": "1.0.0",
+  "description": "Library for commons moduls.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs/de"
+  },
+  "scripts": {
+    "test": "nyc mocha --opts test/mocha.all.opts",
+    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thinkbaer/node-commons-base.git"
+  },
+  "author": "Robert Kania",
+  "license": "MIT",
+  "keywords": [
+    "commons",
+    "typescript"
+  ],
+  "bugs": {
+    "url": "https://github.com/thinkbaer/node-commons-base/issues"
+  },
+  "homepage": "https://github.com/thinkbaer/node-commons-base#readme",
+  "devDependencies": {
+    "@types/chai": "^4.0.0",
+    "@types/lodash": "^4.14.69",
+    "@types/mocha": "^2.2.38",
+    "@types/node": "^9.3.0",
+    "chai": "^4.0.2",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^3.0.0",
+    "gulp-clean": "^0.4.0",
+    "gulp-mocha": "^5.0.0",
+    "gulp-replace": "^0.6.1",
+    "gulp-shell": "^0.6.3",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-typescript": "^4.0.0-alpha.1",
+    "gulpclass": "^0.1.2",
+    "mocha": "^4.1.0",
+    "mocha-typescript": "^1.1.4",
+    "nyc": "^11.0.3",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.4.1",
+    "typescript-require": "^0.2.9-1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
+  "private": true,
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "tmp/",
+      "build/"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "cache": false
+  }
+}
