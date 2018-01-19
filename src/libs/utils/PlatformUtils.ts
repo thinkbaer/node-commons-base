@@ -8,7 +8,7 @@ import * as fs from "fs";
 import * as _ from "lodash";
 
 
-const FILEPATH = path.sep === '/' ? /^(\.|\.\/|\/)?([\w.\/])*$/ : /^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$/;
+const FILEPATH = path.sep === '/' ? /^(\.|\.\/|\/)([\w\/\.\-_ ]*)$/ : /^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$/;
 
 /**
  * Platform-specific tools.
