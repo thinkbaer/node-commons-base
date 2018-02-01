@@ -31,10 +31,37 @@ export class ClassLoader {
     return klasses
   }
 
+  private static filterClasses(exported: { loaded: any, source: string } | { loaded: any, source: string }[], allLoaded: Function[]) {
+    if (_.isArray(exported)) {
+      exported.forEach(e => this.filterClasses(e, allLoaded));
+    } else {
+      if (exported.loaded instanceof Function) {
+        if (Reflect && Reflect['getOwnMetadata']) {
+          Reflect['defineMetadata']('__SOURCE__', exported.source, exported.loaded)
+        } else {
+          exported.loaded.__SOURCE__ = exported.source;
+        }
+        allLoaded.push(exported.loaded);
+      } else if (exported.loaded instanceof Object) {
+        Object.keys(exported.loaded).forEach(key => this.filterClasses({
+          loaded: exported.loaded[key],
+          source: exported.source
+        }, allLoaded));
+      } else if (exported.loaded instanceof Array) {
+        exported.loaded.forEach((i: any) => this.filterClasses({
+          loaded: i,
+          source: exported.source
+        }, allLoaded));
+      }
+    }
+
+    return allLoaded;
+  }
+
+
   private static loadFileClasses(exported: any, allLoaded: Function[]) {
     if (exported instanceof Function) {
       allLoaded.push(exported);
-
     } else if (exported instanceof Object) {
       Object.keys(exported).forEach(key => this.loadFileClasses(exported[key], allLoaded));
 
@@ -53,14 +80,20 @@ export class ClassLoader {
       return allDirs.concat(y);
     }, [] as string[]);
 
-    const dirs = allFiles
+    const dirs: { loaded: any, source: string }[] = allFiles
       .filter(file => {
         const dtsExtension = file.substring(file.length - 5, file.length);
         return formats.indexOf(PlatformUtils.pathExtname(file)) !== -1 && dtsExtension !== ".d.ts";
       })
-      .map(file => PlatformUtils.load(PlatformUtils.pathResolve(file)));
+      .map(file => {
+        let cls = {
+          source: file,
+          loaded: PlatformUtils.load(PlatformUtils.pathResolve(file))
+        }
+        return cls;
+      });
 
-    return this.loadFileClasses(dirs, []);
+    return this.filterClasses(dirs, []);//this.loadFileClasses(dirs, []);
   }
 
 
@@ -76,5 +109,16 @@ export class ClassLoader {
     return allFiles
       .filter(file => PlatformUtils.pathExtname(file) === format)
       .map(file => PlatformUtils.load(PlatformUtils.pathResolve(file)));
+  }
+
+
+  static getSource(cls: Function): string {
+    let _path = null;
+    if (Reflect && Reflect['getOwnMetadata']) {
+      _path = Reflect['getOwnMetadata']('__SOURCE__', cls);
+    } else {
+      _path = cls['__SOURCE__'] ? cls['__SOURCE__'] : null;
+    }
+    return _path;
   }
 }

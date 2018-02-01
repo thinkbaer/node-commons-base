@@ -1,6 +1,6 @@
 {
   "name": "commons-base",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Library for commons moduls.",
   "main": "index.js",
   "directories": {
@@ -43,6 +43,7 @@
     "mocha": "^4.1.0",
     "mocha-typescript": "^1.1.4",
     "nyc": "^11.0.3",
+    "reflect-metadata": "^0.1.12",
     "ts-node": "^4.1.0",
     "typescript": "^2.4.1",
     "typescript-require": "^0.2.9-1"
