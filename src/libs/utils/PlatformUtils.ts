@@ -6,6 +6,8 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as _ from "lodash";
+import {FileUtils} from "./FileUtils";
+import {deprecate} from "util";
 
 
 const FILEPATH = path.sep === '/' ? /^(\.|\.\/|\/)([\w\/\.\-_ ]*)$/ : /^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$/;
@@ -236,37 +238,17 @@ export class PlatformUtils {
     return true;
   }
 
+
   static readFile(filename: string): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      fs.readFile(filename, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      })
-    });
+    return FileUtils.readFile(filename);
+  }
+
+  static readFileSync(filename: string): Buffer {
+    return FileUtils.readFileSync(filename);
   }
 
   static deleteFile(dir: string, file: string): Promise<{}> {
-    return new Promise(function (resolve, reject) {
-      let filePath = path.join(dir, file);
-      fs.lstat(filePath, function (err, stats) {
-        if (err) {
-          return reject(err);
-        }
-        if (stats.isDirectory()) {
-          resolve(PlatformUtils.deleteDirectory(filePath));
-        } else {
-          fs.unlink(filePath, function (err) {
-            if (err) {
-              return reject(err);
-            }
-            resolve();
-          });
-        }
-      });
-    });
+    return FileUtils.deleteFile(dir,file);
   };
 
   static deleteDirectory(dir: string): Promise<{}> {
