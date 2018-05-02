@@ -59,7 +59,17 @@ export class PlatformUtils {
     // that are not installed globally
 
     try {
+      if(this.fileExist(name)){
+        let ext = this.pathExtname(name);
+        if(ext){
+          // name without ext
+          name = name.replace(ext,'');
+        }
+      }
+
       return require(name);
+
+
 
     } catch (err) {
       if (!path.isAbsolute(name) && name.substr(0, 2) !== "./" && name.substr(0, 3) !== "../") {
