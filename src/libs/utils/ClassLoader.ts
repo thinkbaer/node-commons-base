@@ -5,9 +5,11 @@
  */
 
 import * as _ from "lodash"
-import {StringOrFunction} from "../../types";
 import {PlatformUtils} from "./PlatformUtils";
+import {StringOrFunction} from "../Constants";
 
+
+const __SOURCE__ = '__SOURCE__';
 /**
  * Loads all exported classes from the given directory.
  */
@@ -37,7 +39,7 @@ export class ClassLoader {
     } else {
       if (exported.loaded instanceof Function) {
         if (Reflect && Reflect['getOwnMetadata']) {
-          Reflect['defineMetadata']('__SOURCE__', exported.source, exported.loaded)
+          Reflect['defineMetadata'](__SOURCE__, exported.source, exported.loaded)
         } else {
           exported.loaded.__SOURCE__ = exported.source;
         }
@@ -89,7 +91,7 @@ export class ClassLoader {
         let cls = {
           source: file,
           loaded: PlatformUtils.load(PlatformUtils.pathResolve(file))
-        }
+        };
         return cls;
       });
 
@@ -115,9 +117,9 @@ export class ClassLoader {
   static getSource(cls: Function): string {
     let _path = null;
     if (Reflect && Reflect['getOwnMetadata']) {
-      _path = Reflect['getOwnMetadata']('__SOURCE__', cls);
+      _path = Reflect['getOwnMetadata'](__SOURCE__, cls);
     } else {
-      _path = cls['__SOURCE__'] ? cls['__SOURCE__'] : null;
+      _path = cls[__SOURCE__] ? cls[__SOURCE__] : null;
     }
     return _path;
   }

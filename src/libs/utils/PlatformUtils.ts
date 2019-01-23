@@ -7,7 +7,6 @@ import * as path from "path";
 import * as fs from "fs";
 import * as _ from "lodash";
 import {FileUtils} from "./FileUtils";
-import {deprecate} from "util";
 
 
 const FILEPATH = path.sep === '/' ? /^(\.|\.\/|\/)([\w\/\.\-_ ]*)$/ : /^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$/;
@@ -66,11 +65,7 @@ export class PlatformUtils {
           name = name.replace(ext,'');
         }
       }
-
       return require(name);
-
-
-
     } catch (err) {
       if (!path.isAbsolute(name) && name.substr(0, 2) !== "./" && name.substr(0, 3) !== "../") {
         return require(path.resolve(process.cwd() + "/node_modules/" + name));
@@ -149,7 +144,7 @@ export class PlatformUtils {
       // has interpolations
       let regex = new RegExp(/\$\{.*\}/g);
       let m = regex.exec(str);
-      let cache = {}
+      let cache = {};
       let inc = 0;
       for (let _m of m) {
         let r = '###' + (inc++) + '###';

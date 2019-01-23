@@ -5,11 +5,11 @@ import {ClassLoader} from "../../src";
 
 
 @suite('test/classloading/reflect')
-class Classloader {
+class classloader_reflectSpec {
 
   @test
   async 'source in metadata'() {
-    let clss = ClassLoader.importClassesFromDirectories([__dirname+'/classes/*'])
+    let clss = ClassLoader.importClassesFromDirectories([__dirname+'/classes/*']);
     expect(clss).to.have.length(1);
     let path = Reflect.getOwnMetadata('__SOURCE__',clss[0]);
     path = path.replace(__dirname,'.');
