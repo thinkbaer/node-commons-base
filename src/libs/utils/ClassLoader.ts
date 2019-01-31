@@ -7,9 +7,11 @@
 import * as _ from "lodash"
 import {PlatformUtils} from "./PlatformUtils";
 import {StringOrFunction} from "../Constants";
+import {FileUtils} from "./FileUtils";
 
 
 const __SOURCE__ = '__SOURCE__';
+
 /**
  * Loads all exported classes from the given directory.
  */
@@ -95,6 +97,34 @@ export class ClassLoader {
         return cls;
       });
 
+    return this.filterClasses(dirs, []);//this.loadFileClasses(dirs, []);
+  }
+
+  static async importClassesFromDirectoriesAsync(directories: string[], formats = [".js", ".ts"]): Promise<Function[]> {
+
+    let allFiles: string[] = [];
+
+    let promises = [];
+    for (let dir of directories) {
+      let x = PlatformUtils.pathNormilize(dir);
+      promises.push(FileUtils.glob(x));
+    }
+    await Promise.all(promises).then(r => {
+      allFiles = allFiles.concat(...r);
+    });
+
+    const dirs: { loaded: any, source: string }[] = allFiles
+      .filter(file => {
+        const dtsExtension = file.substring(file.length - 5, file.length);
+        return formats.indexOf(PlatformUtils.pathExtname(file)) !== -1 && dtsExtension !== ".d.ts";
+      })
+      .map(file => {
+        let cls = {
+          source: file,
+          loaded: PlatformUtils.load(PlatformUtils.pathResolve(file))
+        };
+        return cls;
+      });
     return this.filterClasses(dirs, []);//this.loadFileClasses(dirs, []);
   }
 

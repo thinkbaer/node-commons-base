@@ -3,7 +3,30 @@ import * as path from "path";
 import * as fs from "fs";
 
 
+
 export class FileUtils {
+
+  static _GLOB: any = null;
+
+  static _getGlob(){
+    if(!this._GLOB){
+      this._GLOB = PlatformUtils.load('glob');
+    }
+    return this._GLOB;
+  }
+
+
+  static glob(lib_path: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      this._getGlob()(lib_path, ((err: Error, matches: string[]) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(matches);
+        }
+      }));
+    })
+  }
 
 
   static async getJson(filepath: string): Promise<any> {
@@ -41,13 +64,13 @@ export class FileUtils {
     return fs.readFileSync(filename)
   }
 
-  static writeFileSync(filename: string, content: Buffer | string,options?: { encoding?: string | null; mode?: number | string; flag?: string; } | string | null): void {
-    return fs.writeFileSync(filename,content,options);
+  static writeFileSync(filename: string, content: Buffer | string, options?: { encoding?: string | null; mode?: number | string; flag?: string; } | string | null): void {
+    return fs.writeFileSync(filename, content, options);
   }
 
-  static writeFile(filename: string,content:string|Buffer,options?: { encoding?: string | null; mode?: number | string; flag?: string; } | string | null): Promise<void> {
+  static writeFile(filename: string, content: string | Buffer, options?: { encoding?: string | null; mode?: number | string; flag?: string; } | string | null): Promise<void> {
     return new Promise((resolve, reject) => {
-      fs.writeFile(filename,content,options, (err) => {
+      fs.writeFile(filename, content, options, (err) => {
         if (err) {
           reject(err);
         } else {
