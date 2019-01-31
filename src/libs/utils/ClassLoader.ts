@@ -8,6 +8,7 @@ import * as _ from "lodash"
 import {PlatformUtils} from "./PlatformUtils";
 import {StringOrFunction} from "../Constants";
 import {FileUtils} from "./FileUtils";
+import {ClassUtils} from "./ClassUtils";
 
 
 const __SOURCE__ = '__SOURCE__';
@@ -18,9 +19,7 @@ const __SOURCE__ = '__SOURCE__';
 export class ClassLoader {
 
   static importClassesFromAny(o: StringOrFunction[]): Function[] {
-
     let klasses: Function[] = [];
-
     o.forEach(x => {
       if (_.isString(x)) {
         let _x = PlatformUtils.pathNormilize(PlatformUtils.pathResolve(x));
@@ -35,46 +34,21 @@ export class ClassLoader {
     return klasses
   }
 
-  private static filterClasses(exported: { loaded: any, source: string } | { loaded: any, source: string }[], allLoaded: Function[]) {
-    if (_.isArray(exported)) {
-      exported.forEach(e => this.filterClasses(e, allLoaded));
-    } else {
-      if (exported.loaded instanceof Function) {
-        if (Reflect && Reflect['getOwnMetadata']) {
-          Reflect['defineMetadata'](__SOURCE__, exported.source, exported.loaded)
-        } else {
-          exported.loaded.__SOURCE__ = exported.source;
-        }
-        allLoaded.push(exported.loaded);
-      } else if (exported.loaded instanceof Object) {
-        Object.keys(exported.loaded).forEach(key => this.filterClasses({
-          loaded: exported.loaded[key],
-          source: exported.source
-        }, allLoaded));
-      } else if (exported.loaded instanceof Array) {
-        exported.loaded.forEach((i: any) => this.filterClasses({
-          loaded: i,
-          source: exported.source
-        }, allLoaded));
+  static importClassesFromAnyAsync(o: StringOrFunction[]): Promise<Function[]> {
+    return Promise.all(o.map(async x => {
+      if (_.isString(x)) {
+        let _x = PlatformUtils.pathNormilize(PlatformUtils.pathResolve(x));
+        return ClassLoader.importClassesFromDirectoriesAsync([_x])
+      } else if (x instanceof Function) {
+        return [x]
+      } else {
+        throw new Error('TODO: unknown ' + x)
       }
-    }
-
-    return allLoaded;
+    })).then(x => {
+      return _.concat([],...x);
+    });
   }
 
-
-  private static loadFileClasses(exported: any, allLoaded: Function[]) {
-    if (exported instanceof Function) {
-      allLoaded.push(exported);
-    } else if (exported instanceof Object) {
-      Object.keys(exported).forEach(key => this.loadFileClasses(exported[key], allLoaded));
-
-    } else if (exported instanceof Array) {
-      exported.forEach((i: any) => this.loadFileClasses(i, allLoaded));
-    }
-
-    return allLoaded;
-  }
 
   static importClassesFromDirectories(directories: string[], formats = [".js", ".ts"]): Function[] {
 
@@ -101,9 +75,7 @@ export class ClassLoader {
   }
 
   static async importClassesFromDirectoriesAsync(directories: string[], formats = [".js", ".ts"]): Promise<Function[]> {
-
     let allFiles: string[] = [];
-
     let promises = [];
     for (let dir of directories) {
       let x = PlatformUtils.pathNormilize(dir);
@@ -143,42 +115,79 @@ export class ClassLoader {
       .map(file => PlatformUtils.load(PlatformUtils.pathResolve(file)));
   }
 
-
-  static getSource(cls: Function): string {
-    let _path = null;
-    if (Reflect && Reflect['getOwnMetadata']) {
-      _path = Reflect['getOwnMetadata'](__SOURCE__, cls);
-    } else {
-      _path = cls[__SOURCE__] ? cls[__SOURCE__] : null;
+  /**
+   * Loads all json files from the given directory.
+   */
+  static async importJsonsFromDirectoriesAsync(directories: string[], format = ".json"): Promise<any[]> {
+    let allFiles: string[] = [];
+    let promises = [];
+    for (let dir of directories) {
+      let x = PlatformUtils.pathNormilize(dir);
+      promises.push(FileUtils.glob(x));
     }
-    return _path;
+    await Promise.all(promises).then(r => {
+      allFiles = allFiles.concat(...r);
+    });
+
+    return allFiles
+      .filter(file => PlatformUtils.pathExtname(file) === format)
+      .map(file => PlatformUtils.load(PlatformUtils.pathResolve(file)));
   }
 
+
+  static getSource(cls: Function): string {
+    return ClassUtils.getSource(cls);
+  }
+
+
   static getClassName(klass: string | Function) {
-    if (_.isString(klass)) {
-      return klass;
-    } else if (_.isFunction(klass)) {
-      return klass.name;
-    } else if (_.isObject(klass)) {
-      return klass.constructor.name;
-    } else {
-      throw new Error('class not found!');
-    }
+    return ClassUtils.getClassName(klass);
   }
 
 
   static getFunction(klass: string | Function) {
-    if (_.isString(klass)) {
-      // TODO create error class
-      throw new Error('class not found! 02');
-    } else if (_.isFunction(klass)) {
-      return klass;
-    } else if (_.isObject(klass)) {
-      return klass.constructor;
-    } else {
-      // TODO create error class
-      throw new Error('class not found! 01');
-    }
+    return ClassUtils.getFunction(klass);
   }
 
+
+  private static filterClasses(exported: { loaded: any, source: string } | { loaded: any, source: string }[], allLoaded: Function[]) {
+    if (_.isArray(exported)) {
+      exported.forEach(e => this.filterClasses(e, allLoaded));
+    } else {
+      if (exported.loaded instanceof Function) {
+        if (Reflect && Reflect['getOwnMetadata']) {
+          Reflect['defineMetadata'](__SOURCE__, exported.source, exported.loaded)
+        } else {
+          exported.loaded.__SOURCE__ = exported.source;
+        }
+        allLoaded.push(exported.loaded);
+      } else if (exported.loaded instanceof Object) {
+        _.keys(exported.loaded).forEach(key => this.filterClasses({
+          loaded: exported.loaded[key],
+          source: exported.source
+        }, allLoaded));
+      } else if (exported.loaded instanceof Array) {
+        exported.loaded.forEach((i: any) => this.filterClasses({
+          loaded: i,
+          source: exported.source
+        }, allLoaded));
+      }
+    }
+
+    return allLoaded;
+  }
+
+
+  private static loadFileClasses(exported: any, allLoaded: Function[]) {
+    if (exported instanceof Function) {
+      allLoaded.push(exported);
+    } else if (exported instanceof Object) {
+      Object.keys(exported).forEach(key => this.loadFileClasses(exported[key], allLoaded));
+
+    } else if (exported instanceof Array) {
+      exported.forEach((i: any) => this.loadFileClasses(i, allLoaded));
+    }
+
+    return allLoaded;
+  }
 }
