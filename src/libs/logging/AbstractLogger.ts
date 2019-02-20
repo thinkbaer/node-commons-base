@@ -35,7 +35,12 @@ export abstract class AbstractLogger implements ILoggerApi {
 
   }
 
-
+  isEnabled(set: boolean = null): boolean {
+    if (!_.isNull(set)) {
+      this._enable = set;
+    }
+    return this._enable;
+  }
 
   disable() {
     this._enable = false;
@@ -58,31 +63,40 @@ export abstract class AbstractLogger implements ILoggerApi {
     return _.find(this.levels, l => l.nr == this.logLevel);
   }
 
-  debug(msg: string): void {
-    this.log(C_DEBUG, msg);
+  setLevel(level: number | string): void {
+    const l = this.findLevel(level);
+    if (l) {
+      this.logLevel = l.nr;
+    } else {
+      throw new Error("can't find given log level entry " + level)
+    }
+  }
+
+  debug(...msg: any[]): void {
+    this.log(C_DEBUG, ...msg);
   }
 
 
-  error(msg: string): void {
-    this.log(C_ERROR, msg);
+  error(...msg: any[]): void {
+    this.log(C_ERROR, ...msg);
   }
 
 
-  info(msg: string): void {
-    this.log(C_INFO, msg);
+  info(...msg: any[]): void {
+    this.log(C_INFO, ...msg);
   }
 
 
-  abstract log(level: number | string, msg: string): void ;
+  abstract log(level: number | string, ...msg: any[]): void ;
 
 
-  trace(msg: string): void {
-    this.log(C_TRACE, msg);
+  trace(...msg: any[]): void {
+    this.log(C_TRACE, ...msg);
   }
 
 
-  warn(msg: string): void {
-    this.log(C_WARN, msg);
+  warn(...msg: any[]): void {
+    this.log(C_WARN, ...msg);
   }
 
 

@@ -58,8 +58,9 @@ export class Logger {
   }
 
 
-  static log(msg: string, level: number | string = C_INFO, opts: ILoggerOptions = DEFAULT) {
-    this.getLogger(opts).log(level, msg);
+  static log( level: number | string = C_INFO, ...msg:any[]) {
+
+   this.getLogger().log(level, ...msg);
   }
 
   static error(msg: string, opts: ILoggerOptions = DEFAULT) {

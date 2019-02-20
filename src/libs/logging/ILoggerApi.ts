@@ -2,18 +2,22 @@ import {ILogLevel} from "./ILogLevel";
 
 export interface ILoggerApi {
 
-  log(level: number | string, msg: string,): void;
+  isEnabled(set?:boolean):boolean;
 
-  info(msg: string): void;
+  log(level: number | string, ...msg: any[]): void;
 
-  warn(msg: string): void;
+  info(...msg: any[]): void;
 
-  error(msg: string): void;
+  warn(...msg: any[]): void;
 
-  debug(msg: string): void;
+  error(...msg: any[]): void;
 
-  trace(msg: string): void;
+  debug(...msg: any[]): void;
+
+  trace(...msg: any[]): void;
 
   getLevel(): ILogLevel;
+
+  setLevel(level:number | string): void;
 
 }
