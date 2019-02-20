@@ -58,29 +58,28 @@ export class Logger {
   }
 
 
-  static log( level: number | string = C_INFO, ...msg:any[]) {
-
-   this.getLogger().log(level, ...msg);
+  static log(level: number | string = C_INFO, ...msg: any[]) {
+    this.getLogger().log(level, ...msg);
   }
 
-  static error(msg: string, opts: ILoggerOptions = DEFAULT) {
-    this.log(msg, C_ERROR, opts);
+  static error(...msg: any[]) {
+    this.log(C_ERROR, ...msg);
   }
 
-  static warn(msg: string, opts: ILoggerOptions = DEFAULT) {
-    this.log(msg, C_WARN, opts);
+  static warn(...msg: any[]) {
+    this.log(C_WARN, ...msg);
   }
 
-  static info(msg: string, opts: ILoggerOptions = DEFAULT) {
-    this.log(msg, C_INFO, opts);
+  static info(...msg: any[]) {
+    this.log(C_INFO, ...msg);
   }
 
-  static debug(msg: string, opts: ILoggerOptions = DEFAULT) {
-    this.log(msg, C_DEBUG, opts);
+  static debug(...msg: any[]) {
+    this.log(C_DEBUG, ...msg);
   }
 
-  static trace(msg: string, opts: ILoggerOptions = DEFAULT) {
-    this.log(msg, C_TRACE, opts);
+  static trace(...msg: any[]) {
+    this.log(C_TRACE, ...msg);
   }
 
 }

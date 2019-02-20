@@ -5,19 +5,20 @@ import {C_ERROR, C_TRACE, C_WARN} from "../Constants";
 export class ConsoleLogger extends AbstractLogger {
 
   log(level: number | string, ...msg: any[]): void {
-    if(!this._enable){
+    if (!this._enable) {
       return;
     }
     const l = this.findLevel(level);
     const ll = this.getLevel();
-    if(l.nr <= ll.nr){
-      if(l.name == C_ERROR){
+
+    if (l && l.nr <= ll.nr) {
+      if (l.name == C_ERROR) {
         console.error(...msg);
-      }else if(l.name == C_WARN){
+      } else if (l.name == C_WARN) {
         console.warn(...msg);
-      }else if(l.name == C_TRACE){
+      } else if (l.name == C_TRACE) {
         console.trace(...msg);
-      }else {
+      } else {
         console.log(...msg);
       }
     }
