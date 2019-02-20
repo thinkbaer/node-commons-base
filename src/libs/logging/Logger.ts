@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import {ILoggerApi} from "./ILoggerApi";
 import {ConsoleLogger} from "./ConsoleLogger";
-import {C_CONSOLE, C_DEFAULT} from "../Constants";
+import {C_CONSOLE, C_DEBUG, C_DEFAULT, C_ERROR, C_INFO, C_TRACE, C_WARN} from "../Constants";
 import {ILoggerOptions} from "./ILoggerOptions";
 
 
@@ -58,9 +58,28 @@ export class Logger {
   }
 
 
-  static log(msg: string, level: number | string = 'info', opts: ILoggerOptions = DEFAULT) {
+  static log(msg: string, level: number | string = C_INFO, opts: ILoggerOptions = DEFAULT) {
     this.getLogger(opts).log(level, msg);
   }
 
+  static error(msg: string, opts: ILoggerOptions = DEFAULT) {
+    this.log(msg, C_ERROR, opts);
+  }
+
+  static warn(msg: string, opts: ILoggerOptions = DEFAULT) {
+    this.log(msg, C_WARN, opts);
+  }
+
+  static info(msg: string, opts: ILoggerOptions = DEFAULT) {
+    this.log(msg, C_INFO, opts);
+  }
+
+  static debug(msg: string, opts: ILoggerOptions = DEFAULT) {
+    this.log(msg, C_DEBUG, opts);
+  }
+
+  static trace(msg: string, opts: ILoggerOptions = DEFAULT) {
+    this.log(msg, C_TRACE, opts);
+  }
 
 }
