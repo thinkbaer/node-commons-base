@@ -12,4 +12,6 @@ export const C_TRACE = 'trace';
 export const C_INFO = 'info';
 
 
+export const ISO8601 = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
+
 
