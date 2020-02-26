@@ -20,6 +20,7 @@
     "commons",
     "typescript"
   ],
+  "browser": "browser.js",
   "bugs": {
     "url": "https://github.com/thinkbaer/node-commons-base/issues"
   },
