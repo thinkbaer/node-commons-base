@@ -51,4 +51,29 @@ class TreeutilsSpec {
     console.log(inspect(c, null, 10));
     expect(c).to.be.deep.eq(tree);
   }
+
+
+  @test
+  async 'do nothing on empty values'() {
+
+    const dates = [];
+
+    const tree: any = {
+      str: null
+    };
+
+    let c = JSON.parse(JSON.stringify(tree));
+    console.log(inspect(c, null, 10));
+    c = JsonUtils.correctTypes(c);
+
+    console.log(inspect(c, null, 10));
+    expect(c).to.be.deep.eq(tree);
+
+    c = JSON.parse(JSON.stringify(null));
+    console.log(inspect(c, null, 10));
+    c = JsonUtils.correctTypes(c);
+
+    console.log(inspect(c, null, 10));
+    expect(c).to.be.deep.eq(null);
+  }
 }
