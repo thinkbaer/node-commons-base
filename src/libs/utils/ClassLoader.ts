@@ -4,11 +4,11 @@
  *
  */
 
-import * as _ from "lodash"
-import {PlatformUtils} from "./PlatformUtils";
-import {StringOrFunction} from "../Constants";
-import {FileUtils} from "./FileUtils";
-import {ClassUtils} from "./ClassUtils";
+import * as _ from 'lodash';
+import {PlatformUtils} from './PlatformUtils';
+import {StringOrFunction} from '../Constants';
+import {FileUtils} from './FileUtils';
+import {ClassUtils} from './ClassUtils';
 
 
 const __SOURCE__ = '__SOURCE__';
@@ -22,63 +22,64 @@ export class ClassLoader {
     let klasses: Function[] = [];
     o.forEach(x => {
       if (_.isString(x)) {
-        let _x = PlatformUtils.pathNormilize(PlatformUtils.pathResolve(x));
-        let exported = ClassLoader.importClassesFromDirectories([_x]);
-        klasses = klasses.concat.apply(klasses, exported)
+        const _x = PlatformUtils.pathNormilize(PlatformUtils.pathResolve(x));
+        const exported = ClassLoader.importClassesFromDirectories([_x]);
+        klasses = klasses.concat.apply(klasses, exported);
       } else if (x instanceof Function) {
-        klasses.push(x)
+        klasses.push(x);
       } else {
-        throw new Error('TODO: unknown ' + x)
+        throw new Error('TODO: unknown ' + x);
       }
     });
-    return klasses
+    return klasses;
   }
 
   static importClassesFromAnyAsync(o: StringOrFunction[]): Promise<Function[]> {
     return Promise.all(o.map(async x => {
       if (_.isString(x)) {
-        let _x = PlatformUtils.pathNormilize(PlatformUtils.pathResolve(x));
-        return ClassLoader.importClassesFromDirectoriesAsync([_x])
+        const _x = PlatformUtils.pathNormilize(PlatformUtils.pathResolve(x));
+        return ClassLoader.importClassesFromDirectoriesAsync([_x]);
       } else if (x instanceof Function) {
-        return [x]
+        return [x];
       } else {
-        throw new Error('TODO: unknown ' + x)
+        throw new Error('TODO: unknown ' + x);
       }
     })).then(x => {
-      return _.concat([],...x);
+      return _.concat([], ...x);
     });
   }
 
 
-  static importClassesFromDirectories(directories: string[], formats = [".js", ".ts"]): Function[] {
+  static importClassesFromDirectories(directories: string[], formats = ['.js', '.ts']): Function[] {
 
     const allFiles = directories.reduce((allDirs, dir) => {
-      let x = PlatformUtils.pathNormilize(dir);
-      let y = PlatformUtils.load("glob").sync(x);
+      const x = PlatformUtils.pathNormilize(dir);
+      const y = PlatformUtils.load('glob').sync(x);
       return allDirs.concat(y);
     }, [] as string[]);
 
     const dirs: { loaded: any, source: string }[] = allFiles
       .filter(file => {
         const dtsExtension = file.substring(file.length - 5, file.length);
-        return formats.indexOf(PlatformUtils.pathExtname(file)) !== -1 && dtsExtension !== ".d.ts";
+        return formats.indexOf(PlatformUtils.pathExtname(file)) !== -1 && dtsExtension !== '.d.ts';
       })
       .map(file => {
-        let cls = {
+        const cls = {
           source: file,
           loaded: PlatformUtils.load(PlatformUtils.pathResolve(file))
         };
         return cls;
       });
 
-    return this.filterClasses(dirs, []);//this.loadFileClasses(dirs, []);
+    return this.filterClasses(dirs, []); // this.loadFileClasses(dirs, []);
   }
 
-  static async importClassesFromDirectoriesAsync(directories: string[], formats = [".js", ".ts"]): Promise<Function[]> {
+
+  static async importClassesFromDirectoriesAsync(directories: string[], formats = ['.js', '.ts']): Promise<Function[]> {
     let allFiles: string[] = [];
-    let promises = [];
-    for (let dir of directories) {
-      let x = PlatformUtils.pathNormilize(dir);
+    const promises = [];
+    for (const dir of directories) {
+      const x = PlatformUtils.pathNormilize(dir);
       promises.push(FileUtils.glob(x));
     }
     await Promise.all(promises).then(r => {
@@ -88,26 +89,26 @@ export class ClassLoader {
     const dirs: { loaded: any, source: string }[] = allFiles
       .filter(file => {
         const dtsExtension = file.substring(file.length - 5, file.length);
-        return formats.indexOf(PlatformUtils.pathExtname(file)) !== -1 && dtsExtension !== ".d.ts";
+        return formats.indexOf(PlatformUtils.pathExtname(file)) !== -1 && dtsExtension !== '.d.ts';
       })
       .map(file => {
-        let cls = {
+        const cls = {
           source: file,
           loaded: PlatformUtils.load(PlatformUtils.pathResolve(file))
         };
         return cls;
       });
-    return this.filterClasses(dirs, []);//this.loadFileClasses(dirs, []);
+    return this.filterClasses(dirs, []); // this.loadFileClasses(dirs, []);
   }
 
 
   /**
    * Loads all json files from the given directory.
    */
-  static importJsonsFromDirectories(directories: string[], format = ".json"): any[] {
+  static importJsonsFromDirectories(directories: string[], format = '.json'): any[] {
 
     const allFiles = directories.reduce((allDirs, dir) => {
-      return allDirs.concat(PlatformUtils.load("glob").sync(PlatformUtils.pathNormilize(dir)));
+      return allDirs.concat(PlatformUtils.load('glob').sync(PlatformUtils.pathNormilize(dir)));
     }, [] as string[]);
 
     return allFiles
@@ -118,11 +119,11 @@ export class ClassLoader {
   /**
    * Loads all json files from the given directory.
    */
-  static async importJsonsFromDirectoriesAsync(directories: string[], format = ".json"): Promise<any[]> {
+  static async importJsonsFromDirectoriesAsync(directories: string[], format = '.json'): Promise<any[]> {
     let allFiles: string[] = [];
-    let promises = [];
-    for (let dir of directories) {
-      let x = PlatformUtils.pathNormilize(dir);
+    const promises = [];
+    for (const dir of directories) {
+      const x = PlatformUtils.pathNormilize(dir);
       promises.push(FileUtils.glob(x));
     }
     await Promise.all(promises).then(r => {
@@ -156,7 +157,7 @@ export class ClassLoader {
     } else {
       if (exported.loaded instanceof Function) {
         if (Reflect && Reflect['getOwnMetadata']) {
-          Reflect['defineMetadata'](__SOURCE__, exported.source, exported.loaded)
+          Reflect['defineMetadata'](__SOURCE__, exported.source, exported.loaded);
         } else {
           exported.loaded.__SOURCE__ = exported.source;
         }

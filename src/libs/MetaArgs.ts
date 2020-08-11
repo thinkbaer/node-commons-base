@@ -1,34 +1,24 @@
-import * as _ from 'lodash';
+import {MetadataStorage} from './MetadataStorage';
 
+/**
+ * Replaced in future by MetadataStorage
+ */
 export class MetaArgs {
 
-  static $self: MetaArgs;
 
-  [k: string]: any;
-
-  static $() {
-    if (!this.$self) {
-      this.$self = new MetaArgs()
-    }
-    return this.$self;
-  }
-
-
-  _key(k: string): any[] {
-    if (!_.has(this,k)) {
-      this[k] = []
-    }
-    return this[k];
+  static $(): MetadataStorage {
+    return MetadataStorage.$();
   }
 
 
   static key(k: string): any[] {
-    return this.$()._key(k);
+    return this.$().key(k);
   }
 
 
   static clear() {
-    this.$self = null;
+    return MetadataStorage.clear();
   }
+
 
 }

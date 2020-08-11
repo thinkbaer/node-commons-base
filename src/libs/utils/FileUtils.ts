@@ -1,15 +1,14 @@
-import {PlatformUtils} from "./PlatformUtils";
-import * as path from "path";
-import * as fs from "fs";
-
+import {PlatformUtils} from './PlatformUtils';
+import * as path from 'path';
+import * as fs from 'fs';
 
 
 export class FileUtils {
 
   static _GLOB: any = null;
 
-  static _getGlob(){
-    if(!this._GLOB){
+  static _getGlob() {
+    if (!this._GLOB) {
       this._GLOB = PlatformUtils.load('glob');
     }
     return this._GLOB;
@@ -25,13 +24,13 @@ export class FileUtils {
           resolve(matches);
         }
       }));
-    })
+    });
   }
 
 
   static async getJson(filepath: string): Promise<any> {
     try {
-      let data = await this.readFile(filepath);
+      const data = await this.readFile(filepath);
       return JSON.parse(data.toString('utf-8'));
     } catch (e) {
     }
@@ -40,7 +39,7 @@ export class FileUtils {
 
   static getJsonSync(filepath: string): any {
     try {
-      let data = this.readFileSync(filepath);
+      const data = this.readFileSync(filepath);
       return JSON.parse(data.toString('utf-8'));
     } catch (e) {
     }
@@ -56,19 +55,21 @@ export class FileUtils {
         } else {
           resolve(data);
         }
-      })
+      });
     });
   }
 
   static readFileSync(filename: string): Buffer {
-    return fs.readFileSync(filename)
+    return fs.readFileSync(filename);
   }
 
-  static writeFileSync(filename: string, content: Buffer | string, options?: { encoding?: string | null; mode?: number | string; flag?: string; } | string | null): void {
+  static writeFileSync(filename: string, content: Buffer | string,
+                       options?: { encoding?: string | null; mode?: number | string; flag?: string; } | string | null): void {
     return fs.writeFileSync(filename, content, options);
   }
 
-  static writeFile(filename: string, content: string | Buffer, options?: { encoding?: string | null; mode?: number | string; flag?: string; } | string | null): Promise<void> {
+  static writeFile(filename: string, content: string | Buffer,
+                   options?: { encoding?: string | null; mode?: number | string; flag?: string; } | string | null): Promise<void> {
     return new Promise((resolve, reject) => {
       fs.writeFile(filename, content, options, (err) => {
         if (err) {
@@ -76,14 +77,14 @@ export class FileUtils {
         } else {
           resolve();
         }
-      })
+      });
     });
   }
 
 
   static deleteFile(dir: string, file: string): Promise<{}> {
     return new Promise(function (resolve, reject) {
-      let filePath = path.join(dir, file);
+      const filePath = path.join(dir, file);
       fs.lstat(filePath, function (err, stats) {
         if (err) {
           return reject(err);
@@ -100,6 +101,6 @@ export class FileUtils {
         }
       });
     });
-  };
+  }
 
 }

@@ -3,10 +3,10 @@
  */
 
 
-import * as path from "path";
-import * as fs from "fs";
-import * as _ from "lodash";
-import {FileUtils} from "./FileUtils";
+import * as path from 'path';
+import * as fs from 'fs';
+import * as _ from 'lodash';
+import {FileUtils} from './FileUtils';
 
 
 const FILEPATH = path.sep === '/' ? /^(\.|\.\/|\/)([\w\/\.\-_ ]*)$/ : /^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$/;
@@ -19,7 +19,7 @@ export class PlatformUtils {
   /**
    * Type of the currently running platform.
    */
-  static type: "browser" | "node" = "node";
+  static type: 'browser' | 'node' = 'node';
 
   static workdir: string = null;
 
@@ -58,17 +58,17 @@ export class PlatformUtils {
     // that are not installed globally
 
     try {
-      if(this.fileExist(name)){
-        let ext = this.pathExtname(name);
-        if(ext){
+      if (this.fileExist(name)) {
+        const ext = this.pathExtname(name);
+        if (ext) {
           // name without ext
-          name = name.replace(ext,'');
+          name = name.replace(ext, '');
         }
       }
       return require(name);
     } catch (err) {
-      if (!path.isAbsolute(name) && name.substr(0, 2) !== "./" && name.substr(0, 3) !== "../") {
-        return require(path.resolve(process.cwd() + "/node_modules/" + name));
+      if (!path.isAbsolute(name) && name.substr(0, 2) !== './' && name.substr(0, 3) !== '../') {
+        return require(path.resolve(process.cwd() + '/node_modules/' + name));
       }
 
       throw err;
@@ -90,7 +90,7 @@ export class PlatformUtils {
     if (/\$\{.*\}/.test(pathStr)) {
       str = this.withoutInterpolation(pathStr, (str) => {
         return path.extname(str);
-      })
+      });
     } else {
       str = path.extname(pathStr);
     }
@@ -114,7 +114,7 @@ export class PlatformUtils {
    * Resolved given path. Does "path.resolve".
    */
   static pathNormAndResolve(pathStr: string): string {
-    return this.pathNormilize(this.pathResolve(pathStr))
+    return this.pathNormilize(this.pathResolve(pathStr));
   }
 
   static isFile(pathStr: string): boolean {
@@ -122,7 +122,7 @@ export class PlatformUtils {
   }
 
   static isDir(pathStr: string): boolean {
-    return fs.statSync(pathStr).isDirectory()
+    return fs.statSync(pathStr).isDirectory();
   }
 
   /**
@@ -142,17 +142,17 @@ export class PlatformUtils {
   static withoutInterpolation(str: string, fn: (str: string) => string) {
     if (/\$\{.*\}/.test(str)) {
       // has interpolations
-      let regex = new RegExp(/\$\{.*\}/g);
-      let m = regex.exec(str);
-      let cache = {};
+      const regex = new RegExp(/\$\{.*\}/g);
+      const m = regex.exec(str);
+      const cache = {};
       let inc = 0;
-      for (let _m of m) {
-        let r = '###' + (inc++) + '###';
+      for (const _m of m) {
+        const r = '###' + (inc++) + '###';
         str = str.replace(_m, r);
         cache[r] = _m;
       }
       str = fn(str);
-      for (let _m in cache) {
+      for (const _m in cache) {
         str = str.replace(_m, cache[_m]);
       }
     }
@@ -163,11 +163,11 @@ export class PlatformUtils {
    * Returns the filename only (without extension)
    */
   static filename(pathStr: string): string {
-    let base = path.basename(pathStr);
+    const base = path.basename(pathStr);
     if (/\$\{.*\}/.test(base)) {
       return this.withoutInterpolation(base, (str) => {
         return str.replace(new RegExp('\\' + path.extname(str) + '$'), '');
-      })
+      });
     }
     return base.replace(new RegExp('\\' + path.extname(base) + '$'), '');
   }
@@ -228,7 +228,7 @@ export class PlatformUtils {
   }
 
   static getHostFileContent(): string {
-    return fs.readFileSync(this.getHostPath(), {encoding: 'utf-8'})
+    return fs.readFileSync(this.getHostPath(), {encoding: 'utf-8'});
   }
 
   static mkdir(targetDir: string, sep: string = path.sep): boolean {
@@ -253,8 +253,8 @@ export class PlatformUtils {
   }
 
   static deleteFile(dir: string, file: string): Promise<{}> {
-    return FileUtils.deleteFile(dir,file);
-  };
+    return FileUtils.deleteFile(dir, file);
+  }
 
   static deleteDirectory(dir: string): Promise<{}> {
     return new Promise(function (resolve, reject) {
